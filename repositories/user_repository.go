@@ -143,6 +143,6 @@ func (u *userRepository) UpdateUserRepository(request *models.User) error {
 
 func NewUserRepository(db *gorm.DB) UserRepository {
 	// db.Migrator().DropTable(&models.User{})
-	db.AutoMigrate(&models.User{})
+	//db.AutoMigrate(&models.User{})
 	return &userRepository{db: db}
 }
