@@ -36,13 +36,14 @@ func (w webRoutes) Install(app *fiber.App) {
 	// User LogIn and User CRUD
 
 	//LogIn
-	route.Post("sign-up", w.userController.SignUpUserController)
+	route.Post("login", w.userController.LoginController)
+	//route.Post("sign-up", w.userController.SignUpUserController)
 	route.Post("sign-in", w.userController.SignInUserController)
 
 	//CRUD
 	route.Post("get-all-user", w.userController.GetAllUserController)
 	route.Post("get-by-id/:id", w.userController.GetUserByIdController)
-	route.Post("create-user", w.userController.CreateUserController)
+	//route.Post("create-user", w.userController.CreateUserController)
 	route.Post("update-user", w.userController.UpdateUserController)
 	route.Post("delete-user", w.userController.DeleteUserController)
 

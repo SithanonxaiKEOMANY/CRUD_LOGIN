@@ -92,4 +92,5 @@ func main() {
 	// newApiRoute.Install(app)
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", config.Env("app.port"))))
+
 }
