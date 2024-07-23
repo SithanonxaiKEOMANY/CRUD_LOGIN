@@ -22,33 +22,37 @@ type UserRepository interface {
 	DeleteUserRepository(id uint) error
 
 	//Check UserName and Check Phone
-	CheckEmailAlreadyHas(email string) (bool, error)
-	CheckPhoneAlreadyHas(phone string) (bool, error)
+	CheckEmailAlreadyHas(request models.User) (*models.User, error)
+	//CheckPhoneAlreadyHas(phone string) (bool, error)
 }
 
 type userRepository struct{ db *gorm.DB }
 
-// CheckPhoneAlreadyHas implements UserRepository.
-func (u *userRepository) CheckPhoneAlreadyHas(phone string) (bool, error) {
+// CheckEmailAlreadyHas implements UserRepository.
+func (u *userRepository) CheckEmailAlreadyHas(request models.User) (*models.User, error) {
 
 	var model models.User
-	result := u.db.Where("phone = ?", phone).First(&model)
+	result := u.db.Where("email = ?", request.Email).First(&model)
 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
-		return false, result.Error
+		return nil, result.Error
 	}
-	return result.RowsAffected > 0, nil
+	if result.RowsAffected > 0 {
+		return &model, nil
+	}
+
+	return nil, nil
 }
 
-// CheckUserNameAlreadyHas implements UserRepository.
-func (u *userRepository) CheckEmailAlreadyHas(email string) (bool, error) {
+// // CheckPhoneAlreadyHas implements UserRepository.
+// func (u *userRepository) CheckPhoneAlreadyHas(phone string) (bool, error) {
 
-	var model models.User
-	result := u.db.Where("email = ?", email).First(&model)
-	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
-		return false, result.Error
-	}
-	return result.RowsAffected > 0, nil
-}
+// 	var model models.User
+// 	result := u.db.Where("phone = ?", phone).First(&model)
+// 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+// 		return false, result.Error
+// 	}
+// 	return result.RowsAffected > 0, nil
+// }
 
 // SignUpUserRepository implements UserRepository.
 func (u *userRepository) SignUpUserRepository(request models.User) (*models.User, error) {
@@ -142,7 +146,7 @@ func (u *userRepository) UpdateUserRepository(request *models.User) error {
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {
-	// db.Migrator().DropTable(&models.User{})
-	db.AutoMigrate(&models.User{})
+	//db.Migrator().DropTable(&models.User{})
+	//db.AutoMigrate(&models.User{})
 	return &userRepository{db: db}
 }

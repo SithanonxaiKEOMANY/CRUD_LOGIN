@@ -45,12 +45,21 @@ func NewSuccessMsg(ctx *fiber.Ctx, msg interface{}) error {
 	})
 }
 
-func NewCreateSuccessResponse(ctx *fiber.Ctx, data interface{}) error {
-	return ctx.Status(http.StatusCreated).JSON(fiber.Map{
-		"status": true,
-		"data":   data,
+// func NewCreateSuccessResponse(ctx *fiber.Ctx, data interface{}) error {
+// 	return ctx.Status(http.StatusCreated).JSON(fiber.Map{
+// 		"status": true,
+// 		"data":   data,
+// 	})
+// }
+
+func NewSuccessResponseSignIn(ctx *fiber.Ctx, data interface{}, token string) error {
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"status":       true,
+		"data":         data,
+		"access_token": token,
 	})
 }
+
 func NewSuccessMessage(ctx *fiber.Ctx, data interface{}) error {
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
 		"status":  true,

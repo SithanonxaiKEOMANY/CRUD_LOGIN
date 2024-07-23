@@ -11,12 +11,12 @@ import (
 
 type UserController interface {
 	SignInUserController(ctx *fiber.Ctx) error
-	SignUpUserController(ctx *fiber.Ctx) error
+	//SignUpUserController(ctx *fiber.Ctx) error
+	LoginController(ctx *fiber.Ctx) error
 
 	GetAllUserController(ctx *fiber.Ctx) error
 	GetUserByIdController(ctx *fiber.Ctx) error
 	GetUserByPhoneController(ctx *fiber.Ctx) error
-	CreateUserController(ctx *fiber.Ctx) error
 	UpdateUserController(ctx *fiber.Ctx) error
 	DeleteUserController(ctx *fiber.Ctx) error
 }
@@ -25,26 +25,32 @@ type userController struct {
 	serviceUser services.UserService
 }
 
-// CreateUserController implements UserController.
-func (u *userController) CreateUserController(ctx *fiber.Ctx) error {
+// LoginController implements UserController.
+func (u *userController) LoginController(ctx *fiber.Ctx) error {
+	request := new(requests.LoginRequest)
 
-	request := new(requests.CreateUserRequest)
-
+	// Parse request body
 	if err := ctx.BodyParser(request); err != nil {
 		return NewErrorResponses(ctx, err)
 	}
+
+	// Validate request data
 	errValidate := validation.Validate(request)
 	if errValidate != nil {
 		return NewErrorValidate(ctx, errValidate[0].Error)
 	}
-	response, err := u.serviceUser.CreateUserService(*request)
 
+	// Call the login service
+	response, token, err := u.serviceUser.LoginService(*request)
 	if err != nil {
-
 		return NewErrorResponses(ctx, err)
 	}
-	return NewSuccessMsg(ctx, response.Message)
+
+	// Call NewSuccessResponseSignIn with the correct number of arguments
+	return NewSuccessResponseSignIn(ctx, response, token)
 }
+
+// CreateUserController implements UserController.
 
 // DeleteUserController implements UserController.
 func (u *userController) DeleteUserController(ctx *fiber.Ctx) error {
@@ -133,24 +139,24 @@ func (u *userController) SignInUserController(ctx *fiber.Ctx) error {
 }
 
 // SignUpUserController implements UserController.
-func (u *userController) SignUpUserController(ctx *fiber.Ctx) error {
+// func (u *userController) SignUpUserController(ctx *fiber.Ctx) error {
 
-	request := new(requests.SignUpUserRequest)
-	if err := ctx.BodyParser(request); err != nil {
-		logs.Error(err)
-		return NewErrorResponses(ctx, err)
-	}
-	errValidate := validation.Validate(request)
-	if errValidate != nil {
-		return NewErrorValidate(ctx, errValidate[0].Error)
-	}
-	response, err := u.serviceUser.SignUpUserService(*request)
+// 	request := new(requests.SignUpUserRequest)
+// 	if err := ctx.BodyParser(request); err != nil {
+// 		logs.Error(err)
+// 		return NewErrorResponses(ctx, err)
+// 	}
+// 	errValidate := validation.Validate(request)
+// 	if errValidate != nil {
+// 		return NewErrorValidate(ctx, errValidate[0].Error)
+// 	}
+// 	response, err := u.serviceUser.SignUpUserService(*request)
 
-	if err != nil {
-		return NewErrorResponses(ctx, err)
-	}
-	return NewSuccessResponse(ctx, response)
-}
+// 	if err != nil {
+// 		return NewErrorResponses(ctx, err)
+// 	}
+// 	return NewSuccessResponse(ctx, response)
+// }
 
 // UpdateUserController implements UserController.
 func (u *userController) UpdateUserController(ctx *fiber.Ctx) error {
